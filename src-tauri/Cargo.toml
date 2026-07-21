@@ -1,6 +1,6 @@
 [package]
 name = "folklore"
-version = "0.1.2"
+version = "0.1.3"
 description = "A viewer for superlore docs — desktop app and web app, one codebase."
 authors = ["Piyush Raj <piyushxcoder@gamil.com>"]
 license = "MIT"
