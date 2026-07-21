@@ -1,8 +1,9 @@
 [package]
 name = "folklore"
 version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
+description = "A viewer for superlore docs — desktop app and web app, one codebase."
+authors = ["Piyush Raj <piyushxcoder@gamil.com>"]
+license = "MIT"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

@@ -2,6 +2,12 @@
   "name": "folklore",
   "private": true,
   "version": "0.1.0",
+  "description": "A viewer for superlore docs — desktop app and web app, one codebase.",
+  "license": "MIT",
+  "author": {
+    "name": "Piyush Raj",
+    "email": "piyushxcoder@gamil.com"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",
