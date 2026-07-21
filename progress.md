@@ -34,12 +34,13 @@
 - [x] **OS file-association registration** — `tauri.conf.json`'s `bundle.fileAssociations` now registers `.superlore` (`application/x-superlore`) and `.mdx` (`text/markdown`), driving the Linux `.desktop` MimeType / macOS `Info.plist` / Windows registry. Caught and fixed a real gap along the way: Tauri's default Linux `.desktop` template has `Exec={{exec}}` with **no `%f`**, so double-click/`xdg-open` would've launched with zero file argument even with the MimeType wired up correctly — silently defeating the whole feature. Fixed with a custom template (`src-tauri/linux/main.desktop.hbs`, one-line diff from Tauri's own default) wired via `bundle.linux.deb.desktopTemplate`/`rpm.desktopTemplate`. Verified by rebuilding all three Linux targets (deb/rpm/AppImage) locally and inspecting the generated `.desktop` — `%f` and `MimeType` present in all three (AppImage has no separate config field for this but picks up the same template) — then launching the release binary with a file arg under Xvfb to confirm `get_launch_path` still opens it correctly.
 
 - [x] `v0.1.1` released: bumped version everywhere (`package.json`, `Cargo.toml`/`Cargo.lock`, `tauri.conf.json`), tagged, watched `release.yml` through all 4 platform jobs to green, verified the published `.deb` actually contains the `%f`/`MimeType` fix before publishing the draft. AUR `folklore-bin` bumped to match (`pkgver`, `sha256sums`, rebuilt locally to confirm, pushed to the AUR remote).
+- [x] **Metadata panel** (`src/components/MetadataPanel.tsx`) — surfaces `bundle.meta` (`.superlore`'s `meta.json`) and MDX frontmatter, both of which were being parsed/captured but never actually shown anywhere in the UI until now. New "Metadata" titlebar button (shown once a doc is open) toggles it. `PageViewer` now wires `SuperloreDoc`'s `onFrontmatter` callback through to `App.tsx` state. Verified with a real `.superlore` bundle (frontmatter + `meta.json` both render) and a plain `.mdx` (bundle section correctly hidden, frontmatter still shows).
 
 ## Next
 
 - [ ] `pnpm tauri dev` smoke test — user to confirm live-reload fires consistently and Canvas arrows render correctly in their actual (non-Xvfb) desktop environment
 - [ ] Real double-click / "Open With" smoke test on an actual installed `.deb`/`.rpm`/AppImage (verified so far only via direct CLI-arg launch simulating what `%f` passes)
-- [ ] Comments UI for `.superlore` bundles (parsed into `bundle.comments`, not yet rendered)
+- [ ] Comments UI for `.superlore` bundles (parsed into `bundle.comments`, not yet rendered — metadata panel now shows the *count* but not the thread contents)
 - [ ] Single-instance handling (`tauri-plugin-single-instance`) so a second `folklore <path>` launch reuses the open window instead of spawning a new one
 
 ## Plans

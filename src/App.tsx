@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import logo from "./assets/accordion.svg";
 import { EmptyState } from "./components/EmptyState";
+import { MetadataPanel } from "./components/MetadataPanel";
 import { OutlineSidebar } from "./components/OutlineSidebar";
 import type { Heading } from "./components/PageViewer";
 import { PageViewer } from "./components/PageViewer";
@@ -19,12 +20,13 @@ import {
 import { isDesktop } from "./lib/platform";
 import { watchSource } from "./lib/watchSource";
 
-type View = "doc" | "settings";
+type View = "doc" | "settings" | "metadata";
 
 function App() {
   const { settings, setSettings, ready } = useSettings();
   const [doc, setDoc] = useState<OpenedDoc | null>(null);
   const [outline, setOutline] = useState<Heading[]>([]);
+  const [frontmatter, setFrontmatter] = useState<Record<string, unknown>>({});
   const [view, setView] = useState<View>("doc");
   const [error, setError] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -35,6 +37,7 @@ function App() {
       const opened = await promise;
       if (opened) {
         setDoc(opened);
+        setFrontmatter({});
         setError(null);
         setView("doc");
       }
@@ -157,6 +160,11 @@ function App() {
         </div>
         <div className="title-bar-actions">
           <button onClick={handlePickFile}>Open</button>
+          {doc && (
+            <button onClick={() => setView(view === "metadata" ? "doc" : "metadata")}>
+              {view === "metadata" ? "Close metadata" : "Metadata"}
+            </button>
+          )}
           <button onClick={() => setView(view === "settings" ? "doc" : "settings")}>
             {view === "settings" ? "Close settings" : "Settings"}
           </button>
@@ -168,8 +176,10 @@ function App() {
         <main className="app-main">
           {view === "settings" ? (
             <SettingsPanel settings={settings} onChange={setSettings} />
+          ) : view === "metadata" && doc ? (
+            <MetadataPanel doc={doc} frontmatter={frontmatter} />
           ) : doc ? (
-            <PageViewer doc={doc} scheme={settings.scheme} onOutline={setOutline} />
+            <PageViewer doc={doc} scheme={settings.scheme} onOutline={setOutline} onFrontmatter={setFrontmatter} />
           ) : (
             <EmptyState onPickFile={handlePickFile} error={error} />
           )}

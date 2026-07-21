@@ -15,9 +15,10 @@ interface PageViewerProps {
   doc: OpenedDoc;
   scheme: Scheme;
   onOutline: (headings: Heading[]) => void;
+  onFrontmatter: (frontmatter: Record<string, unknown>) => void;
 }
 
-export function PageViewer({ doc, scheme, onOutline }: PageViewerProps) {
+export function PageViewer({ doc, scheme, onOutline, onFrontmatter }: PageViewerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -54,6 +55,7 @@ export function PageViewer({ doc, scheme, onOutline }: PageViewerProps) {
         rehypePlugins={rehypePlugins}
         badge={false}
         onError={setError}
+        onFrontmatter={onFrontmatter}
         fallback={<p className="page-status">Rendering…</p>}
       />
       {error && <p className="page-status page-status-error">{error}</p>}
