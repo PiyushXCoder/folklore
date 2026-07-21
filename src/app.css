@@ -15,10 +15,10 @@ body {
 }
 
 /* superlore/runtime.css sets --font-sans directly on .superlore-doc (not :root), so it isn't
-   picked up by inheriting body's font-family — override it at the same selector so Inter
-   applies to the rendered doc content too, not just our own app chrome. */
+   picked up by inheriting body's font-family — override it at the same selector. Monospace for
+   the page content specifically (app chrome elsewhere stays on Inter via body). */
 .superlore-doc {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 /* superlore's Canvas fullscreen overlay (bg-fd-background/98 backdrop-blur-sm, hardcoded in
@@ -180,6 +180,7 @@ body {
 .page-hero {
   margin-bottom: 16px;
   padding: 0 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 .page-hero h1 {
