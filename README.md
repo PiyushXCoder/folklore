@@ -1,8 +1,11 @@
 <p align="center">
-  <img src="src/assets/accordion.svg" width="96" alt="folklore logo" />
+  <img src="src/assets/banner.png" alt="folklore — a doc viewer for superlore files" />
 </p>
 
-<h1 align="center">folklore</h1>
+<h1 align="center">
+  <img src="src/assets/accordion.svg" width="28" alt="" align="center" />
+  folklore
+</h1>
 
 <p align="center">A viewer for <a href="https://superlore.vercel.app">superlore</a> docs — desktop app and web app, one codebase.</p>
 
