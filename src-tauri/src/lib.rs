@@ -26,23 +26,38 @@ fn read_file_bytes(path: String) -> Result<Vec<u8>, String> {
 struct Watchers(Mutex<HashMap<u32, RecommendedWatcher>>);
 static NEXT_WATCH_ID: AtomicU32 = AtomicU32::new(1);
 
-/// Watches `path` for changes, emitting `file-changed:<id>` (payload: the path) on modify/create.
-/// The frontend listens for that event and drops the watcher via `unwatch_path` when done.
+/// Watches `path` for changes, emitting `file-changed:<id>` on modify/create/remove. The frontend
+/// listens for that event and drops the watcher via `unwatch_path` when done.
+///
+/// Watches the **parent directory**, not the file itself, and filters by filename. Many editors
+/// (vim, VS Code's atomic save, etc.) save by writing a temp file and `rename()`-ing it over the
+/// original — that replaces the inode, so a watch on the file's own path goes dead after the
+/// first save (the watched inode is gone; only a directory watch keeps seeing the new one).
 #[tauri::command]
 fn watch_path(app: AppHandle, watchers: State<Watchers>, path: String) -> Result<u32, String> {
     let id = NEXT_WATCH_ID.fetch_add(1, Ordering::SeqCst);
     let event_name = format!("file-changed:{id}");
+    let target = std::path::Path::new(&path);
+    let file_name = target.file_name().map(|n| n.to_os_string());
+    let dir = target.parent().unwrap_or(target).to_path_buf();
 
     let mut watcher = notify::recommended_watcher(move |res: notify::Result<notify::Event>| {
         let Ok(event) = res else { return };
-        if event.kind.is_modify() || event.kind.is_create() {
+        if !(event.kind.is_modify() || event.kind.is_create() || event.kind.is_remove()) {
+            return;
+        }
+        let matches = match &file_name {
+            Some(name) => event.paths.iter().any(|p| p.file_name() == Some(name.as_os_str())),
+            None => true,
+        };
+        if matches {
             let _ = app.emit(&event_name, ());
         }
     })
     .map_err(|e| e.to_string())?;
 
     watcher
-        .watch(std::path::Path::new(&path), RecursiveMode::NonRecursive)
+        .watch(&dir, RecursiveMode::NonRecursive)
         .map_err(|e| e.to_string())?;
 
     watchers.0.lock().unwrap().insert(id, watcher);
