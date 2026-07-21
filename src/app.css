@@ -16,10 +16,10 @@ body {
 
 /* superlore/runtime.css sets --font-sans directly on .superlore-doc (not :root), so it isn't
    picked up by inheriting body's font-family — override it at the same selector. Monospace
-   (JetBrains Mono) for doc content specifically — Noto Sans's proportional spacing read off in
+   (Noto Sans Mono) for doc content specifically — Noto Sans's proportional spacing read off in
    the rendered page; app chrome (titlebar, settings, etc.) stays on Noto Sans via body. */
 .superlore-doc {
-  --font-sans: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-sans: "Noto Sans Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 
 /* superlore's Canvas fullscreen overlay (bg-fd-background/98 backdrop-blur-sm, hardcoded in
