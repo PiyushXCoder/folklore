@@ -35,6 +35,7 @@
 
 - [x] `v0.1.1` released: bumped version everywhere (`package.json`, `Cargo.toml`/`Cargo.lock`, `tauri.conf.json`), tagged, watched `release.yml` through all 4 platform jobs to green, verified the published `.deb` actually contains the `%f`/`MimeType` fix before publishing the draft. AUR `folklore-bin` bumped to match (`pkgver`, `sha256sums`, rebuilt locally to confirm, pushed to the AUR remote).
 - [x] **Metadata panel** (`src/components/MetadataPanel.tsx`) — surfaces `bundle.meta` (`.superlore`'s `meta.json`) and MDX frontmatter, both of which were being parsed/captured but never actually shown anywhere in the UI until now. New "Metadata" titlebar button (shown once a doc is open) toggles it. `PageViewer` now wires `SuperloreDoc`'s `onFrontmatter` callback through to `App.tsx` state. Verified with a real `.superlore` bundle (frontmatter + `meta.json` both render) and a plain `.mdx` (bundle section correctly hidden, frontmatter still shows).
+- [x] **Page hero** — frontmatter `title`/`summary` now render above the `.page` paper card (in a new `.page-container` wrapper), not just captured for the metadata panel. Verified with a real `.mdx` carrying both fields.
 
 ## Next
 
