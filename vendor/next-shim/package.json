@@ -1,0 +1,10 @@
+{
+  "name": "next",
+  "version": "0.0.0-shim",
+  "description": "Local stand-in for the `next` package. superlore's Canvas component imports `next/dynamic.js` unconditionally (Canvas is lazy-loaded even in non-Next apps); folklore is a plain Vite app with no Next.js, so this satisfies that one import with a React.lazy/Suspense equivalent instead of pulling in all of Next.js.",
+  "type": "module",
+  "exports": {
+    "./dynamic.js": "./dynamic.mjs",
+    "./dynamic": "./dynamic.mjs"
+  }
+}

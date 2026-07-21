@@ -1,50 +1,139 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/core";
-import "./App.css";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { EmptyState } from "./components/EmptyState";
+import { OutlineSidebar } from "./components/OutlineSidebar";
+import type { Heading } from "./components/PageViewer";
+import { PageViewer } from "./components/PageViewer";
+import { SettingsPanel } from "./components/SettingsPanel";
+import { useSettings } from "./hooks/useSettings";
+import { getLaunchPath, openFromFile, openFromPath, openViaDialog, type OpenedDoc } from "./lib/openFile";
+import { isDesktop } from "./lib/platform";
+
+type View = "doc" | "settings";
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+  const { settings, setSettings, ready } = useSettings();
+  const [doc, setDoc] = useState<OpenedDoc | null>(null);
+  const [outline, setOutline] = useState<Heading[]>([]);
+  const [view, setView] = useState<View>("doc");
+  const [error, setError] = useState<string | null>(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name }));
-  }
+  const load = useCallback(async (promise: Promise<OpenedDoc | null>) => {
+    try {
+      const opened = await promise;
+      if (opened) {
+        setDoc(opened);
+        setError(null);
+        setView("doc");
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    }
+  }, []);
+
+  // CLI-arg launch (`folklore some.superlore` / OS "Open with") — desktop only.
+  useEffect(() => {
+    getLaunchPath().then((path) => {
+      if (path) load(openFromPath(path));
+    });
+  }, [load]);
+
+  // Desktop native drag-drop (Tauri webview event carries filesystem paths, not File objects).
+  useEffect(() => {
+    if (!isDesktop()) return;
+    let unlisten: (() => void) | undefined;
+    import("@tauri-apps/api/webview").then(({ getCurrentWebview }) => {
+      getCurrentWebview()
+        .onDragDropEvent((event) => {
+          if (event.payload.type === "drop") {
+            const path = event.payload.paths[0];
+            if (path) load(openFromPath(path));
+          }
+        })
+        .then((fn) => {
+          unlisten = fn;
+        });
+    });
+    return () => unlisten?.();
+  }, [load]);
+
+  const handleWebDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      const file = e.dataTransfer.files[0];
+      if (file) load(openFromFile(file));
+    },
+    [load],
+  );
+
+  const handlePickFile = useCallback(() => {
+    if (isDesktop()) {
+      load(openViaDialog());
+    } else {
+      fileInputRef.current?.click();
+    }
+  }, [load]);
+
+  const handleFileInput = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) load(openFromFile(file));
+      e.target.value = "";
+    },
+    [load],
+  );
+
+  if (!ready) return null;
 
   return (
-    <main className="container">
-      <h1>Welcome to Tauri + React</h1>
+    <div
+      className="app-shell"
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={isDesktop() ? undefined : handleWebDrop}
+    >
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".superlore,.mdx"
+        style={{ display: "none" }}
+        onChange={handleFileInput}
+      />
 
-      <div className="row">
-        <a href="https://vite.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <header className="title-bar">
+        <div className="title-bar-left">
+          {view === "doc" && outline.length > 0 && (
+            <button
+              className="sidebar-toggle"
+              title={sidebarCollapsed ? "Show outline" : "Hide outline"}
+              onClick={() => setSidebarCollapsed((c) => !c)}
+            >
+              ☰
+            </button>
+          )}
+          <span className="title-bar-filename">{doc?.filename ?? "folklore"}</span>
+        </div>
+        <div className="title-bar-actions">
+          <button onClick={handlePickFile}>Open</button>
+          <button onClick={() => setView(view === "settings" ? "doc" : "settings")}>
+            {view === "settings" ? "Close settings" : "Settings"}
+          </button>
+        </div>
+      </header>
+
+      <div className="app-body">
+        {view === "doc" && !sidebarCollapsed && <OutlineSidebar headings={outline} />}
+        <main className="app-main">
+          {view === "settings" ? (
+            <SettingsPanel settings={settings} onChange={setSettings} />
+          ) : doc ? (
+            <PageViewer doc={doc} flavor={settings.flavor} onOutline={setOutline} />
+          ) : (
+            <EmptyState onPickFile={handlePickFile} error={error} />
+          )}
+        </main>
       </div>
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
-
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
-      <p>{greetMsg}</p>
-    </main>
+    </div>
   );
 }
 
