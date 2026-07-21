@@ -54,7 +54,7 @@ pnpm tauri build
 
 ### Releasing
 
-Pushing a `v*.*.*` tag (or running the *Release* workflow manually from the Actions tab) builds installers for Linux, macOS (Intel + Apple Silicon), and Windows, and publishes them as a draft GitHub Release, and separately deploys the web build to GitHub Pages.
+Pushing a `v*.*.*` tag (or running the *Release* workflow manually from the Actions tab) builds installers for Linux, macOS (Intel + Apple Silicon), and Windows, and publishes them as a draft GitHub Release. The web build deploys to GitHub Pages separately (its own *Deploy web app to GitHub Pages* workflow), on every push to `master` — kept apart from tag releases because GitHub Pages' environment protection only allows deploys from the default branch, not tags.
 
 ## Project layout
 

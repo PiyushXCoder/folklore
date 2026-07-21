@@ -40,10 +40,8 @@ Progress log: `progress.md`. Feature plans: `plans/`.
 
 ## Release / CI
 
-- `.github/workflows/release.yml` — triggers on pushing a `v*.*.*` tag or manual `workflow_dispatch`. Two independent jobs:
-  - `build-tauri`: matrix over Ubuntu/Windows/macOS (both `aarch64`/`x86_64` targets) via `tauri-apps/tauri-action`, uploaded to a **draft** GitHub Release (`releaseDraft: true` — review and publish manually). `NO_STRIP: true` is set for all platforms (harmless on Windows/macOS, required on Linux — see Gotchas).
-  - `deploy-pages`: builds the plain web app (`pnpm build`) and deploys `dist/` to GitHub Pages. One-time repo setup needed: Settings → Pages → Source → "GitHub Actions".
-  - On a manual `workflow_dispatch` run off a branch (no tag), `tagName` falls back to `github.ref_name` (the branch name) — re-running dispatch on the same branch updates that same draft release rather than erroring on a duplicate tag.
+- **`.github/workflows/release.yml`** — triggers on pushing a `v*.*.*` tag or manual `workflow_dispatch`. `build-tauri` matrixes Ubuntu/Windows/macOS (both `aarch64`/`x86_64` targets) via `tauri-apps/tauri-action`, uploaded to a **draft** GitHub Release (`releaseDraft: true` — review and publish manually). `NO_STRIP: true` is set for all platforms (harmless on Windows/macOS, required on Linux — see Gotchas). On a manual dispatch off a branch (no tag), `tagName` falls back to `github.ref_name` (the branch name) — re-running dispatch on the same branch updates that same draft release rather than erroring on a duplicate tag.
+- **`.github/workflows/pages.yml`** — separate workflow, deliberately: triggers on push to `master` or manual dispatch, builds the plain web app (`pnpm build`) and deploys `dist/` to GitHub Pages. Kept **out** of `release.yml` because the `github-pages` environment's deployment branch/tag policy (auto-created when Pages is first enabled) defaults to allowing only the repo's default branch — a tag-triggered deploy gets rejected with "Tag `vX.Y.Z` is not allowed to deploy due to environment protection rules," since a tag ref doesn't satisfy a branch policy. One-time repo setup needed: Settings → Pages → Source → "GitHub Actions".
 
 ## Gotchas
 
