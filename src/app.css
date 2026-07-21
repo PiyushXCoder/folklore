@@ -23,6 +23,33 @@ body {
   background-color: var(--app-bg) !important;
 }
 
+/* superlore's compiled CSS is missing @xyflow/react's own base rule for edge <svg> wrappers
+   (react-flow renders each Canvas edge in its own un-sized <svg>, positioned absolute with no
+   explicit width/height — see node_modules/@xyflow/react/dist/style.css's
+   `.react-flow .react-flow__edges svg`, which sets `overflow: visible` and relies on that to
+   paint past the SVG's default 300x150 intrinsic box).
+   - Chromium honors `overflow: visible` on the OUTERMOST <svg> and paints past its box.
+   - WebKitGTK (Tauri's engine) still force-clips the outermost <svg> to its own box regardless
+     of the `overflow` property (an old SVG1.1-era behavior some engines never dropped) —
+     confirmed empirically: computed style shows `overflow: visible`, but content past the box
+     edge still doesn't paint, in both the box's 300x150 default AND after sizing it to 100% of
+     the (pre-zoom) visible canvas — any edge reaching past that still clipped.
+   So `overflow: visible` alone isn't enough here: give the SVG real, generous pixel dimensions
+   (flow-space coordinates, not CSS percentages — a Canvas can be much bigger than what's
+   currently scrolled into view) so there's no nearby box edge left to clip at. Doesn't cover
+   diagrams whose layout extends into negative coordinates from (0,0), but superlore's elkjs-based
+   auto-layout keeps everything positive in practice. */
+.react-flow .react-flow__edges,
+.react-flow .react-flow__edges svg {
+  overflow: visible;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 8000px;
+  height: 8000px;
+  pointer-events: none;
+}
+
 .app-shell {
   display: flex;
   flex-direction: column;
