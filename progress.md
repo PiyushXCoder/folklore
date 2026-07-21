@@ -31,11 +31,13 @@
 - [x] **Fixed: GitHub Pages served a blank page.** The `vite.config.ts` `base:"./"` fix had only been applied locally, never committed — the deploy that ran shipped the still-broken absolute-asset-path build. Committed + pushed; verified live (`piyushxcoder.github.io/folklore/` now returns relative `./assets/...` paths and renders).
 - [x] First real release published: `v0.1.0` on GitHub (all 9 platform artifacts — deb/rpm/AppImage/msi/exe/2×dmg/2×app.tar.gz — attached and verified), Pages live, and an **AUR package** (`folklore-bin`) pushed to `aur.archlinux.org/folklore-bin.git`. It's a `-bin` package: downloads the release's `.deb` and re-lays out its `usr/` tree via `ar`+`bsdtar`, no source build. `packaging/aur-bin/PKGBUILD` + `.SRCINFO` in this repo are the tracked source of truth; verified with a real local `makepkg` build (correct `usr/bin`, `.desktop`, icons layout) before pushing.
 
+- [x] **OS file-association registration** — `tauri.conf.json`'s `bundle.fileAssociations` now registers `.superlore` (`application/x-superlore`) and `.mdx` (`text/markdown`), driving the Linux `.desktop` MimeType / macOS `Info.plist` / Windows registry. Caught and fixed a real gap along the way: Tauri's default Linux `.desktop` template has `Exec={{exec}}` with **no `%f`**, so double-click/`xdg-open` would've launched with zero file argument even with the MimeType wired up correctly — silently defeating the whole feature. Fixed with a custom template (`src-tauri/linux/main.desktop.hbs`, one-line diff from Tauri's own default) wired via `bundle.linux.deb.desktopTemplate`/`rpm.desktopTemplate`. Verified by rebuilding all three Linux targets (deb/rpm/AppImage) locally and inspecting the generated `.desktop` — `%f` and `MimeType` present in all three (AppImage has no separate config field for this but picks up the same template) — then launching the release binary with a file arg under Xvfb to confirm `get_launch_path` still opens it correctly.
+
 ## Next
 
 - [ ] Bump `packaging/aur-bin/PKGBUILD` (`pkgver`, `sha256sums`) and push to the AUR remote on every future release — not automated yet, a manual step
 - [ ] `pnpm tauri dev` smoke test — user to confirm live-reload fires consistently and Canvas arrows render correctly in their actual (non-Xvfb) desktop environment
-- [ ] OS file-association registration (`tauri.conf.json` `bundle.fileAssociations`) so double-clicking `.superlore`/`.mdx` launches folklore directly, not just `folklore <path>` from a terminal
+- [ ] Real double-click / "Open With" smoke test on an actual installed `.deb`/`.rpm`/AppImage (verified so far only via direct CLI-arg launch simulating what `%f` passes)
 - [ ] Comments UI for `.superlore` bundles (parsed into `bundle.comments`, not yet rendered)
 - [ ] Single-instance handling (`tauri-plugin-single-instance`) so a second `folklore <path>` launch reuses the open window instead of spawning a new one
 

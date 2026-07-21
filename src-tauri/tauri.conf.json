@@ -30,6 +30,30 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "fileAssociations": [
+      {
+        "ext": ["superlore"],
+        "name": "superlore bundle",
+        "description": "superlore document bundle",
+        "mimeType": "application/x-superlore",
+        "role": "Viewer"
+      },
+      {
+        "ext": ["mdx"],
+        "name": "MDX document",
+        "description": "MDX document",
+        "mimeType": "text/markdown",
+        "role": "Viewer"
+      }
+    ],
+    "linux": {
+      "deb": {
+        "desktopTemplate": "linux/main.desktop.hbs"
+      },
+      "rpm": {
+        "desktopTemplate": "linux/main.desktop.hbs"
+      }
+    }
   }
 }
