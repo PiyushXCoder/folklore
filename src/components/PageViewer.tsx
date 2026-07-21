@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { SuperloreDoc } from "superlore/runtime";
 import type { OpenedDoc } from "../lib/openFile";
 import { rehypeResolveAssets } from "../lib/superloreFile";
-import { flavorMode, type Flavor } from "../theme/tokens";
+import { schemeMode, type Scheme } from "../theme/tokens";
 import { SUPERLORE_TOKENS } from "../theme/tokens";
 
 export interface Heading {
@@ -13,11 +13,11 @@ export interface Heading {
 
 interface PageViewerProps {
   doc: OpenedDoc;
-  flavor: Flavor;
+  scheme: Scheme;
   onOutline: (headings: Heading[]) => void;
 }
 
-export function PageViewer({ doc, flavor, onOutline }: PageViewerProps) {
+export function PageViewer({ doc, scheme, onOutline }: PageViewerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,7 +49,7 @@ export function PageViewer({ doc, flavor, onOutline }: PageViewerProps) {
       <SuperloreDoc
         key={doc.filename}
         source={doc.bundle.mdx}
-        theme={flavorMode(flavor)}
+        theme={schemeMode(scheme)}
         tokens={SUPERLORE_TOKENS}
         rehypePlugins={rehypePlugins}
         badge={false}

@@ -1,0 +1,266 @@
+/*
+ * Color schemes — one active at a time via [data-scheme] on <html>. Each scheme defines the same
+ * var set: base/mantle/crust/surface0-2/overlay0-2/subtext0-1/text (the app chrome), plus all 14
+ * named accent slots (rosewater..lavender, from Catppuccin's naming — kept as the shared accent
+ * vocabulary across every scheme so the accent grid works identically everywhere). Catppuccin's
+ * own 4 flavors (https://catppuccin.com/palette) use their real values; Darcula, VS Code, and
+ * Adwaita approximate their ecosystem's colors onto the same 14 slots — not certified exact ports.
+ */
+
+:root[data-scheme="latte"] {
+  --cs-rosewater: #dc8a78;
+  --cs-flamingo: #dd7878;
+  --cs-pink: #ea76cb;
+  --cs-mauve: #8839ef;
+  --cs-red: #d20f39;
+  --cs-maroon: #e64553;
+  --cs-peach: #fe640b;
+  --cs-yellow: #df8e1d;
+  --cs-green: #40a02b;
+  --cs-teal: #179299;
+  --cs-sky: #04a5e5;
+  --cs-sapphire: #209fb5;
+  --cs-blue: #1e66f5;
+  --cs-lavender: #7287fd;
+  --cs-text: #4c4f69;
+  --cs-subtext1: #5c5f77;
+  --cs-subtext0: #6c6f85;
+  --cs-overlay2: #7c7f93;
+  --cs-overlay1: #8c8fa1;
+  --cs-overlay0: #9ca0b0;
+  --cs-surface2: #acb0be;
+  --cs-surface1: #bcc0cc;
+  --cs-surface0: #ccd0da;
+  --cs-base: #eff1f5;
+  --cs-mantle: #e6e9ef;
+  --cs-crust: #dce0e8;
+  color-scheme: light;
+}
+
+:root[data-scheme="frappe"] {
+  --cs-rosewater: #f2d5cf;
+  --cs-flamingo: #eebebe;
+  --cs-pink: #f4b8e4;
+  --cs-mauve: #ca9ee6;
+  --cs-red: #e78284;
+  --cs-maroon: #ea999c;
+  --cs-peach: #ef9f76;
+  --cs-yellow: #e5c890;
+  --cs-green: #a6d189;
+  --cs-teal: #81c8be;
+  --cs-sky: #99d1db;
+  --cs-sapphire: #85c1dc;
+  --cs-blue: #8caaee;
+  --cs-lavender: #babbf1;
+  --cs-text: #c6d0f5;
+  --cs-subtext1: #b5bfe2;
+  --cs-subtext0: #a5adce;
+  --cs-overlay2: #949cbb;
+  --cs-overlay1: #838ba7;
+  --cs-overlay0: #737994;
+  --cs-surface2: #626880;
+  --cs-surface1: #51576d;
+  --cs-surface0: #414559;
+  --cs-base: #303446;
+  --cs-mantle: #292c3c;
+  --cs-crust: #232634;
+  color-scheme: dark;
+}
+
+:root[data-scheme="macchiato"] {
+  --cs-rosewater: #f4dbd6;
+  --cs-flamingo: #f0c6c6;
+  --cs-pink: #f5bde6;
+  --cs-mauve: #c6a0f6;
+  --cs-red: #ed8796;
+  --cs-maroon: #ee99a0;
+  --cs-peach: #f5a97f;
+  --cs-yellow: #eed49f;
+  --cs-green: #a6da95;
+  --cs-teal: #8bd5ca;
+  --cs-sky: #91d7e3;
+  --cs-sapphire: #7dc4e4;
+  --cs-blue: #8aadf4;
+  --cs-lavender: #b7bdf8;
+  --cs-text: #cad3f5;
+  --cs-subtext1: #b8c0e0;
+  --cs-subtext0: #a5adcb;
+  --cs-overlay2: #939ab7;
+  --cs-overlay1: #8087a2;
+  --cs-overlay0: #6e738d;
+  --cs-surface2: #5b6078;
+  --cs-surface1: #494d64;
+  --cs-surface0: #363a4f;
+  --cs-base: #24273a;
+  --cs-mantle: #1e2030;
+  --cs-crust: #181926;
+  color-scheme: dark;
+}
+
+:root[data-scheme="mocha"] {
+  --cs-rosewater: #f5e0dc;
+  --cs-flamingo: #f2cdcd;
+  --cs-pink: #f5c2e7;
+  --cs-mauve: #cba6f7;
+  --cs-red: #f38ba8;
+  --cs-maroon: #eba0ac;
+  --cs-peach: #fab387;
+  --cs-yellow: #f9e2af;
+  --cs-green: #a6e3a1;
+  --cs-teal: #94e2d5;
+  --cs-sky: #89dceb;
+  --cs-sapphire: #74c7ec;
+  --cs-blue: #89b4fa;
+  --cs-lavender: #b4befe;
+  --cs-text: #cdd6f4;
+  --cs-subtext1: #bac2de;
+  --cs-subtext0: #a6adc8;
+  --cs-overlay2: #9399b2;
+  --cs-overlay1: #7f849c;
+  --cs-overlay0: #6c7086;
+  --cs-surface2: #585b70;
+  --cs-surface1: #45475a;
+  --cs-surface0: #313244;
+  --cs-base: #1e1e2e;
+  --cs-mantle: #181825;
+  --cs-crust: #11111b;
+  color-scheme: dark;
+}
+
+/* JetBrains Darcula (IntelliJ's default dark theme) */
+:root[data-scheme="darcula"] {
+  --cs-rosewater: #d19a66;
+  --cs-flamingo: #cc7832;
+  --cs-pink: #e37cc4;
+  --cs-mauve: #9876aa;
+  --cs-red: #ff6b68;
+  --cs-maroon: #ff6b68;
+  --cs-peach: #cc7832;
+  --cs-yellow: #ffc66d;
+  --cs-green: #6a8759;
+  --cs-teal: #629755;
+  --cs-sky: #56a8f5;
+  --cs-sapphire: #6897bb;
+  --cs-blue: #6897bb;
+  --cs-lavender: #9876aa;
+  --cs-text: #a9b7c6;
+  --cs-subtext1: #a9b7c6;
+  --cs-subtext0: #808080;
+  --cs-overlay2: #8a8a8a;
+  --cs-overlay1: #787878;
+  --cs-overlay0: #6b6b6b;
+  --cs-surface2: #4e5254;
+  --cs-surface1: #45494a;
+  --cs-surface0: #3c3f41;
+  --cs-base: #2b2b2b;
+  --cs-mantle: #252525;
+  --cs-crust: #1e1e1e;
+  color-scheme: dark;
+}
+
+/* VS Code's default dark theme (Dark+) */
+:root[data-scheme="vscode"] {
+  --cs-rosewater: #ce9178;
+  --cs-flamingo: #d7ba7d;
+  --cs-pink: #c586c0;
+  --cs-mauve: #c586c0;
+  --cs-red: #f44747;
+  --cs-maroon: #f44747;
+  --cs-peach: #ce9178;
+  --cs-yellow: #dcdcaa;
+  --cs-green: #6a9955;
+  --cs-teal: #4ec9b0;
+  --cs-sky: #4ec9b0;
+  --cs-sapphire: #9cdcfe;
+  --cs-blue: #569cd6;
+  --cs-lavender: #569cd6;
+  --cs-text: #d4d4d4;
+  --cs-subtext1: #cccccc;
+  --cs-subtext0: #9d9d9d;
+  --cs-overlay2: #8f8f8f;
+  --cs-overlay1: #7f7f7f;
+  --cs-overlay0: #6e6e6e;
+  --cs-surface2: #3e3e42;
+  --cs-surface1: #333333;
+  --cs-surface0: #2d2d2d;
+  --cs-base: #1e1e1e;
+  --cs-mantle: #252526;
+  --cs-crust: #181818;
+  color-scheme: dark;
+}
+
+/* GNOME Adwaita (light) */
+:root[data-scheme="adwaita"] {
+  --cs-rosewater: #ffa348;
+  --cs-flamingo: #e66100;
+  --cs-pink: #c061cb;
+  --cs-mauve: #9141ac;
+  --cs-red: #e01b24;
+  --cs-maroon: #c30000;
+  --cs-peach: #ff7800;
+  --cs-yellow: #f6d32d;
+  --cs-green: #33d17a;
+  --cs-teal: #2190a4;
+  --cs-sky: #62a0ea;
+  --cs-sapphire: #1c71d8;
+  --cs-blue: #3584e4;
+  --cs-lavender: #6f8396;
+  --cs-text: #241f31;
+  --cs-subtext1: #3d3846;
+  --cs-subtext0: #5e5c64;
+  --cs-overlay2: #77767b;
+  --cs-overlay1: #9a9996;
+  --cs-overlay0: #c0bfbc;
+  --cs-surface2: #deddda;
+  --cs-surface1: #f0f0f0;
+  --cs-surface0: #ffffff;
+  --cs-base: #fafafa;
+  --cs-mantle: #ebebeb;
+  --cs-crust: #e0e0e0;
+  color-scheme: light;
+}
+
+/* accent: one of the 14 named colors above, picked in Settings, aliased to --cs-accent */
+:root[data-accent="rosewater"] { --cs-accent: var(--cs-rosewater); }
+:root[data-accent="flamingo"] { --cs-accent: var(--cs-flamingo); }
+:root[data-accent="pink"] { --cs-accent: var(--cs-pink); }
+:root[data-accent="mauve"] { --cs-accent: var(--cs-mauve); }
+:root[data-accent="red"] { --cs-accent: var(--cs-red); }
+:root[data-accent="maroon"] { --cs-accent: var(--cs-maroon); }
+:root[data-accent="peach"] { --cs-accent: var(--cs-peach); }
+:root[data-accent="yellow"] { --cs-accent: var(--cs-yellow); }
+:root[data-accent="green"] { --cs-accent: var(--cs-green); }
+:root[data-accent="teal"] { --cs-accent: var(--cs-teal); }
+:root[data-accent="sky"] { --cs-accent: var(--cs-sky); }
+:root[data-accent="sapphire"] { --cs-accent: var(--cs-sapphire); }
+:root[data-accent="blue"] { --cs-accent: var(--cs-blue); }
+:root[data-accent="lavender"] { --cs-accent: var(--cs-lavender); }
+
+:root {
+  --radius: 2px;
+
+  --app-bg: var(--cs-base);
+  --app-bg-mantle: var(--cs-mantle);
+  --app-bg-crust: var(--cs-crust);
+  --app-surface: var(--cs-surface0);
+  --app-surface-hover: var(--cs-surface1);
+  --app-border: var(--cs-surface1);
+  --app-border-subtle: var(--cs-surface0);
+  --app-text: var(--cs-text);
+  --app-text-muted: var(--cs-subtext0);
+  --app-text-faint: var(--cs-overlay1);
+  --app-accent: var(--cs-accent);
+  --app-accent-ink: var(--cs-crust);
+}
+
+html, body, #root {
+  background: var(--app-bg);
+  color: var(--app-text);
+}
+
+/* Flat design system: 2px radius everywhere, including inside superlore's own rendered doc. */
+*,
+*::before,
+*::after {
+  border-radius: var(--radius) !important;
+}

@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "superlore/runtime.css";
-import "./theme/catppuccin.css";
+import "./theme/schemes.css";
 import "./app.css";
 import App from "./App";
 

@@ -36,6 +36,11 @@ body {
   gap: 8px;
 }
 
+.title-bar-logo {
+  width: 18px;
+  height: 18px;
+}
+
 .title-bar-filename {
   font-size: 13px;
   color: var(--app-text-muted);
@@ -132,7 +137,7 @@ body {
 }
 
 .page-status-error {
-  color: var(--ctp-red);
+  color: var(--cs-red);
 }
 
 .empty-state {
@@ -144,6 +149,11 @@ body {
   gap: 12px;
   padding: 48px;
   color: var(--app-text-muted);
+}
+
+.empty-state-logo {
+  width: 72px;
+  height: 72px;
 }
 
 .empty-state h1 {
@@ -172,27 +182,30 @@ body {
   color: var(--app-text-muted);
 }
 
-.flavor-grid {
+.scheme-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
 }
 
-.flavor-swatch {
+.scheme-swatch {
   padding: 16px 8px;
   border: 1px solid var(--app-border);
-  background: var(--ctp-base);
-  color: var(--ctp-text);
+  background: var(--cs-base);
+  color: var(--cs-text);
   cursor: pointer;
   font-size: 13px;
 }
 
-.flavor-swatch[data-flavor="latte"] { background: #eff1f5; color: #4c4f69; }
-.flavor-swatch[data-flavor="frappe"] { background: #303446; color: #c6d0f5; }
-.flavor-swatch[data-flavor="macchiato"] { background: #24273a; color: #cad3f5; }
-.flavor-swatch[data-flavor="mocha"] { background: #1e1e2e; color: #cdd6f4; }
+.scheme-swatch[data-scheme="latte"] { background: #eff1f5; color: #4c4f69; }
+.scheme-swatch[data-scheme="frappe"] { background: #303446; color: #c6d0f5; }
+.scheme-swatch[data-scheme="macchiato"] { background: #24273a; color: #cad3f5; }
+.scheme-swatch[data-scheme="mocha"] { background: #1e1e2e; color: #cdd6f4; }
+.scheme-swatch[data-scheme="darcula"] { background: #2b2b2b; color: #a9b7c6; }
+.scheme-swatch[data-scheme="vscode"] { background: #1e1e1e; color: #d4d4d4; }
+.scheme-swatch[data-scheme="adwaita"] { background: #fafafa; color: #241f31; }
 
-.flavor-swatch.is-active {
+.scheme-swatch.is-active {
   outline: 2px solid var(--app-accent);
   outline-offset: 2px;
 }
@@ -210,20 +223,20 @@ body {
   cursor: pointer;
 }
 
-.accent-swatch[data-accent="rosewater"] { background: var(--ctp-rosewater); }
-.accent-swatch[data-accent="flamingo"] { background: var(--ctp-flamingo); }
-.accent-swatch[data-accent="pink"] { background: var(--ctp-pink); }
-.accent-swatch[data-accent="mauve"] { background: var(--ctp-mauve); }
-.accent-swatch[data-accent="red"] { background: var(--ctp-red); }
-.accent-swatch[data-accent="maroon"] { background: var(--ctp-maroon); }
-.accent-swatch[data-accent="peach"] { background: var(--ctp-peach); }
-.accent-swatch[data-accent="yellow"] { background: var(--ctp-yellow); }
-.accent-swatch[data-accent="green"] { background: var(--ctp-green); }
-.accent-swatch[data-accent="teal"] { background: var(--ctp-teal); }
-.accent-swatch[data-accent="sky"] { background: var(--ctp-sky); }
-.accent-swatch[data-accent="sapphire"] { background: var(--ctp-sapphire); }
-.accent-swatch[data-accent="blue"] { background: var(--ctp-blue); }
-.accent-swatch[data-accent="lavender"] { background: var(--ctp-lavender); }
+.accent-swatch[data-accent="rosewater"] { background: var(--cs-rosewater); }
+.accent-swatch[data-accent="flamingo"] { background: var(--cs-flamingo); }
+.accent-swatch[data-accent="pink"] { background: var(--cs-pink); }
+.accent-swatch[data-accent="mauve"] { background: var(--cs-mauve); }
+.accent-swatch[data-accent="red"] { background: var(--cs-red); }
+.accent-swatch[data-accent="maroon"] { background: var(--cs-maroon); }
+.accent-swatch[data-accent="peach"] { background: var(--cs-peach); }
+.accent-swatch[data-accent="yellow"] { background: var(--cs-yellow); }
+.accent-swatch[data-accent="green"] { background: var(--cs-green); }
+.accent-swatch[data-accent="teal"] { background: var(--cs-teal); }
+.accent-swatch[data-accent="sky"] { background: var(--cs-sky); }
+.accent-swatch[data-accent="sapphire"] { background: var(--cs-sapphire); }
+.accent-swatch[data-accent="blue"] { background: var(--cs-blue); }
+.accent-swatch[data-accent="lavender"] { background: var(--cs-lavender); }
 
 .accent-swatch.is-active {
   outline: 2px solid var(--app-text);

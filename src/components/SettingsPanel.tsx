@@ -1,5 +1,5 @@
 import type { Settings } from "../hooks/useSettings";
-import { ACCENTS, FLAVORS, FLAVOR_LABELS } from "../theme/tokens";
+import { ACCENTS, SCHEMES, SCHEME_LABELS } from "../theme/tokens";
 
 interface SettingsPanelProps {
   settings: Settings;
@@ -12,16 +12,16 @@ export function SettingsPanel({ settings, onChange }: SettingsPanelProps) {
       <h1>Settings</h1>
 
       <section>
-        <h2>Flavor</h2>
-        <div className="flavor-grid">
-          {FLAVORS.map((flavor) => (
+        <h2>Color scheme</h2>
+        <div className="scheme-grid">
+          {SCHEMES.map((scheme) => (
             <button
-              key={flavor}
-              className={`flavor-swatch${settings.flavor === flavor ? " is-active" : ""}`}
-              data-flavor={flavor}
-              onClick={() => onChange({ ...settings, flavor })}
+              key={scheme}
+              className={`scheme-swatch${settings.scheme === scheme ? " is-active" : ""}`}
+              data-scheme={scheme}
+              onClick={() => onChange({ ...settings, scheme })}
             >
-              {FLAVOR_LABELS[flavor]}
+              {SCHEME_LABELS[scheme]}
             </button>
           ))}
         </div>
@@ -34,7 +34,7 @@ export function SettingsPanel({ settings, onChange }: SettingsPanelProps) {
             <button
               key={accent}
               className={`accent-swatch${settings.accent === accent ? " is-active" : ""}`}
-              data-flavor={settings.flavor}
+              data-scheme={settings.scheme}
               data-accent={accent}
               title={accent}
               aria-label={accent}

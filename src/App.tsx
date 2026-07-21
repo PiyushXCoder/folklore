@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import logo from "./assets/accordion.svg";
 import { EmptyState } from "./components/EmptyState";
 import { OutlineSidebar } from "./components/OutlineSidebar";
 import type { Heading } from "./components/PageViewer";
@@ -111,6 +112,7 @@ function App() {
               ☰
             </button>
           )}
+          <img src={logo} alt="" className="title-bar-logo" />
           <span className="title-bar-filename">{doc?.filename ?? "folklore"}</span>
         </div>
         <div className="title-bar-actions">
@@ -127,7 +129,7 @@ function App() {
           {view === "settings" ? (
             <SettingsPanel settings={settings} onChange={setSettings} />
           ) : doc ? (
-            <PageViewer doc={doc} flavor={settings.flavor} onOutline={setOutline} />
+            <PageViewer doc={doc} scheme={settings.scheme} onOutline={setOutline} />
           ) : (
             <EmptyState onPickFile={handlePickFile} error={error} />
           )}

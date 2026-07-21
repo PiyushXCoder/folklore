@@ -1,3 +1,4 @@
+import logo from "../assets/accordion.svg";
 import { isDesktop } from "../lib/platform";
 
 interface EmptyStateProps {
@@ -8,6 +9,7 @@ interface EmptyStateProps {
 export function EmptyState({ onPickFile, error }: EmptyStateProps) {
   return (
     <div className="empty-state">
+      <img src={logo} alt="" className="empty-state-logo" />
       <h1>folklore</h1>
       <p>A viewer for superlore docs.</p>
       <button className="open-button" onClick={onPickFile}>

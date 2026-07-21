@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { loadJson, saveJson } from "../lib/storage";
-import { type Accent, type Flavor } from "../theme/tokens";
+import { type Accent, type Scheme } from "../theme/tokens";
 
 export interface Settings {
-  flavor: Flavor;
+  scheme: Scheme;
   accent: Accent;
 }
 
-const DEFAULT_SETTINGS: Settings = { flavor: "mocha", accent: "mauve" };
+const DEFAULT_SETTINGS: Settings = { scheme: "mocha", accent: "mauve" };
 
 export function useSettings() {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
@@ -21,7 +21,7 @@ export function useSettings() {
   }, []);
 
   useEffect(() => {
-    document.documentElement.dataset.flavor = settings.flavor;
+    document.documentElement.dataset.scheme = settings.scheme;
     document.documentElement.dataset.accent = settings.accent;
   }, [settings]);
 
