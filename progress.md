@@ -18,10 +18,12 @@
 - [x] Fixed doubled content-box artifact: `SuperloreDoc`'s `background` token now `transparent` (was `var(--app-bg)`), since `.page` alone should paint the surface
 - [x] Verified: `tsc --noEmit` clean, `vite build` clean, `cargo check` clean, headless Playwright check (empty state renders; dropping a real `.mdx` renders content + outline sidebar picks up headings; all 7 schemes swap correctly; no console/page errors)
 - [x] App icon/logo: `src/assets/accordion.svg` (svgrepo #396194) used as web favicon, titlebar + empty-state logo, and regenerated all Tauri desktop/iOS/Android icon sizes via `npx tauri icon`
+- [x] Live-reload: doc view refreshes automatically when the source file changes on disk. Desktop via `@tauri-apps/plugin-fs` `watch()` (new `tauri-plugin-fs` dep + `fs:allow-watch`/`fs:allow-unwatch`/`fs:scope` capability); web via polling a `FileSystemFileHandle`'s `lastModified` (File System Access API — Chromium's `showOpenFilePicker` and `DataTransferItem.getAsFileSystemHandle()` on drag-drop; Firefox/Safari fall back to the old `<input>`/`DataTransfer.files` path with no live-reload). `src/lib/watchSource.ts` + `OpenedDoc.watch` in `src/lib/openFile.ts`.
+- [x] Verified live-reload build: `tsc --noEmit` clean, `cargo check` clean, headless Playwright check of both the plain-`<input>` path and a simulated drag-drop (including the null-handle fallback case, which surfaced and got fixed — a `getAsFileSystemHandle()` resolving to `null` was throwing instead of falling back to the plain `File`)
 
 ## Next
 
-- [ ] `pnpm tauri dev` smoke test (CLI-arg open: `tauri dev -- -- /path/to/file.mdx`, drag-drop, dialog)
+- [ ] `pnpm tauri dev` smoke test (CLI-arg open: `tauri dev -- -- /path/to/file.mdx`, drag-drop, dialog, and now live-reload against a real filesystem watch)
 - [ ] OS file-association registration (`tauri.conf.json` `bundle.fileAssociations`) so double-clicking `.superlore`/`.mdx` launches folklore directly, not just `folklore <path>` from a terminal
 - [ ] Comments UI for `.superlore` bundles (parsed into `bundle.comments`, not yet rendered)
 - [ ] Single-instance handling (`tauri-plugin-single-instance`) so a second `folklore <path>` launch reuses the open window instead of spawning a new one

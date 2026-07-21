@@ -25,6 +25,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_store::Builder::new().build())
+        .plugin(tauri_plugin_fs::init())
         .manage(LaunchPath(Mutex::new(launch_path)))
         .invoke_handler(tauri::generate_handler![get_launch_path, read_file_bytes])
         .run(tauri::generate_context!())

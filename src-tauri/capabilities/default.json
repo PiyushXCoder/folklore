@@ -7,6 +7,12 @@
     "core:default",
     "opener:default",
     "dialog:default",
-    "store:default"
+    "store:default",
+    "fs:allow-watch",
+    "fs:allow-unwatch",
+    {
+      "identifier": "fs:scope",
+      "allow": ["**"]
+    }
   ]
 }
