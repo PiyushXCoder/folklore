@@ -37,6 +37,7 @@
 - [x] **Metadata panel** (`src/components/MetadataPanel.tsx`) — surfaces `bundle.meta` (`.superlore`'s `meta.json`) and MDX frontmatter, both of which were being parsed/captured but never actually shown anywhere in the UI until now. New "Metadata" titlebar button (shown once a doc is open) toggles it. `PageViewer` now wires `SuperloreDoc`'s `onFrontmatter` callback through to `App.tsx` state. Verified with a real `.superlore` bundle (frontmatter + `meta.json` both render) and a plain `.mdx` (bundle section correctly hidden, frontmatter still shows).
 - [x] **Page hero** — frontmatter `title`/`summary` now render above the `.page` paper card (in a new `.page-container` wrapper), not just captured for the metadata panel. Verified with a real `.mdx` carrying both fields.
 - [x] **Noto Sans as default font** (`@fontsource/noto-sans`, self-hosted, not a CDN link) + `.page-container` max-width bumped 820px → 920px. Had to override the font in two places — `body` for app chrome, and `.superlore-doc`'s own `--font-sans` CSS var (set directly on that element by `superlore/runtime.css`, not inherited from `body`) for the rendered doc content. Verified both via computed-style check.
+- [x] **Switched doc content specifically to JetBrains Mono** (`@fontsource/jetbrains-mono`, self-hosted) — Noto Sans's proportional spacing read off in the rendered page. App chrome (titlebar, sidebar, settings/metadata, page hero title) stays Noto Sans; only `.superlore-doc`'s `--font-sans` override changed. Verified via computed-style check + screenshot.
 
 ## Next
 
