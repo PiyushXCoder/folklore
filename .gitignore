@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# AUR package build artifacts (packaging/aur-bin/)
+packaging/*/pkg/
+packaging/*/src/
+packaging/*/*.pkg.tar.*
+packaging/*/*.deb

@@ -28,10 +28,12 @@
 - [x] Local `pnpm tauri build` verified end-to-end (AppImage): hit and fixed a real Linux packaging bug — linuxdeploy's bundled `strip` can't parse the `.relr.dyn` ELF section modern system libs emit, failing on every bundled `.so`. `NO_STRIP=1` skips its (redundant) strip pass.
 - [x] `.github/workflows/release.yml` — tag push (`v*.*.*`) or manual dispatch triggers `build-tauri` (Ubuntu/Windows/macOS × arm64+x64, via `tauri-apps/tauri-action`, uploads to a draft GitHub Release). `NO_STRIP: true` set in CI too.
 - [x] **Fixed: `v0.1.0` tag rejected by GitHub Pages ("environment protection rules").** `deploy-pages` was in `release.yml`, running off the tag push — but the `github-pages` environment's default deployment branch/tag policy only allows the repo's default branch, not tags, so it got rejected outright. Split into its own `.github/workflows/pages.yml`, triggered on push to `master` (+ manual dispatch) instead — decoupled from tag-triggered releases entirely.
+- [x] **Fixed: GitHub Pages served a blank page.** The `vite.config.ts` `base:"./"` fix had only been applied locally, never committed — the deploy that ran shipped the still-broken absolute-asset-path build. Committed + pushed; verified live (`piyushxcoder.github.io/folklore/` now returns relative `./assets/...` paths and renders).
+- [x] First real release published: `v0.1.0` on GitHub (all 9 platform artifacts — deb/rpm/AppImage/msi/exe/2×dmg/2×app.tar.gz — attached and verified), Pages live, and an **AUR package** (`folklore-bin`) pushed to `aur.archlinux.org/folklore-bin.git`. It's a `-bin` package: downloads the release's `.deb` and re-lays out its `usr/` tree via `ar`+`bsdtar`, no source build. `packaging/aur-bin/PKGBUILD` + `.SRCINFO` in this repo are the tracked source of truth; verified with a real local `makepkg` build (correct `usr/bin`, `.desktop`, icons layout) before pushing.
 
 ## Next
 
-- [ ] One-time repo setup: enable GitHub Pages (Settings → Pages → Source → "GitHub Actions"); push a `v*.*.*` tag (or run *Release* manually) for a first real release, and push to `master` (or run *Deploy web app to GitHub Pages* manually) for a first Pages deploy
+- [ ] Bump `packaging/aur-bin/PKGBUILD` (`pkgver`, `sha256sums`) and push to the AUR remote on every future release — not automated yet, a manual step
 - [ ] `pnpm tauri dev` smoke test — user to confirm live-reload fires consistently and Canvas arrows render correctly in their actual (non-Xvfb) desktop environment
 - [ ] OS file-association registration (`tauri.conf.json` `bundle.fileAssociations`) so double-clicking `.superlore`/`.mdx` launches folklore directly, not just `folklore <path>` from a terminal
 - [ ] Comments UI for `.superlore` bundles (parsed into `bundle.comments`, not yet rendered)

@@ -28,6 +28,12 @@ folklore is that reading experience, taken out of the browser. Open a `.superlor
 - **7 color schemes, 14 accents.** Catppuccin's four flavors (Latte, Frappé, Macchiato, Mocha) plus Darcula, VS Code, and Adwaita, each with the full accent palette — switch live from Settings, no restart.
 - **A flat, consistent design language.** 2px border radius everywhere in the app's own chrome, while still letting superlore's Canvas diagrams render their real shapes (circles, diamonds, pills) undistorted.
 
+## Installing
+
+- **Arch Linux**: [`folklore-bin`](https://aur.archlinux.org/packages/folklore-bin) on the AUR — `yay -S folklore-bin` (or your favorite AUR helper).
+- **Other Linux / Windows / macOS**: grab an installer from the [latest release](https://github.com/PiyushXCoder/folklore/releases/latest) (`.deb`, `.rpm`, `.AppImage`, `.msi`, `.exe`, `.dmg`).
+- **Web**: [piyushxcoder.github.io/folklore](https://piyushxcoder.github.io/folklore/) — no install, runs in the browser.
+
 ## Getting started
 
 ```bash
