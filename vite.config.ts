@@ -8,6 +8,11 @@ const host = process.env.TAURI_DEV_HOST;
 export default defineConfig(() => ({
   plugins: [react()],
 
+  // Relative asset paths — works whether this build is served from a domain root (Tauri's
+  // bundled resources, a custom domain) or a subpath (GitHub Pages serves this repo at
+  // /folklore/, and absolute "/assets/..." paths 404 there).
+  base: "./",
+
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
   // 1. prevent Vite from obscuring rust errors
