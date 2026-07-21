@@ -258,8 +258,11 @@ html, body, #root {
   color: var(--app-text);
 }
 
-/* Flat design system: 2px radius everywhere, including inside superlore's own rendered doc. */
-*,
+/* Flat design system: 2px radius everywhere, including inside superlore's own rendered doc —
+   except .kp-canvas-node (superlore Canvas's shape-surface class, nodes.mjs's `SURFACE` const):
+   a Canvas node's border-radius is semantic geometry (circle, diamond, pill), not decorative
+   rounding, so forcing 2px there turns circles into squares instead of just flattening a card. */
+*:not(.kp-canvas-node),
 *::before,
 *::after {
   border-radius: var(--radius) !important;
