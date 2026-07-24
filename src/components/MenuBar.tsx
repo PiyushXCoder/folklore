@@ -11,6 +11,53 @@ const SECTIONS: { id: "file" | "view" | "help"; label: string }[] = [
   { id: "help", label: "Help" },
 ];
 
+function MenuItemRow({ action, onDone }: { action: MenuAction; onDone: () => void }) {
+  const [submenuOpen, setSubmenuOpen] = useState(false);
+
+  if (action.kind === "submenu") {
+    return (
+      <div className="menu-dropdown-item menu-dropdown-item-submenu" onClick={() => setSubmenuOpen((o) => !o)}>
+        <span className="check" />
+        {action.label}
+        <span className="submenu-arrow">▶</span>
+        {submenuOpen && (
+          <div className="menu-dropdown menu-dropdown-nested">
+            {(action.children ?? []).map((child) => (
+              <button
+                key={child.id}
+                className="menu-dropdown-item"
+                disabled={!child.enabled}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  child.run?.();
+                  onDone();
+                }}
+              >
+                <span className="check">{child.kind === "checkbox" && child.checked ? "✓" : ""}</span>
+                {child.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <button
+      className="menu-dropdown-item"
+      disabled={!action.enabled}
+      onClick={() => {
+        action.run?.();
+        onDone();
+      }}
+    >
+      <span className="check">{action.kind === "checkbox" && action.checked ? "✓" : ""}</span>
+      {action.label}
+    </button>
+  );
+}
+
 export function MenuBar({ actions }: MenuBarProps) {
   const [openMenu, setOpenMenu] = useState<"file" | "view" | "help" | null>(null);
   const barRef = useRef<HTMLDivElement>(null);
@@ -43,18 +90,7 @@ export function MenuBar({ actions }: MenuBarProps) {
               {actions
                 .filter((a) => a.section === section.id)
                 .map((action) => (
-                  <button
-                    key={action.id}
-                    className="menu-dropdown-item"
-                    disabled={!action.enabled}
-                    onClick={() => {
-                      action.run();
-                      setOpenMenu(null);
-                    }}
-                  >
-                    <span className="check">{action.kind === "checkbox" && action.checked ? "✓" : ""}</span>
-                    {action.label}
-                  </button>
+                  <MenuItemRow key={action.id} action={action} onDone={() => setOpenMenu(null)} />
                 ))}
             </div>
           )}

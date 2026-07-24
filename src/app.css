@@ -170,6 +170,21 @@ body {
   opacity: 0.8;
 }
 
+.menu-dropdown-item-submenu {
+  position: relative;
+}
+
+.submenu-arrow {
+  margin-left: auto;
+  opacity: 0.6;
+  font-size: 0.75em;
+}
+
+.menu-dropdown-nested {
+  top: -4px;
+  left: 100%;
+}
+
 .panel-back-button {
   background: transparent;
   color: var(--app-text-muted);
@@ -283,6 +298,10 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
+.app-shell[data-desktop="true"] .search-bar {
+  top: 12px;
+}
+
 .search-bar input {
   background: var(--app-surface);
   color: var(--app-text);
@@ -377,6 +396,41 @@ body {
 
 .empty-hint {
   font-size: 13px;
+}
+
+.empty-state-recents {
+  margin-top: 12px;
+}
+
+.empty-state-recents h2 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--app-text-faint);
+  margin: 0 0 6px;
+}
+
+.empty-state-recents ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.empty-state-recents button {
+  background: transparent;
+  color: var(--app-text);
+  border: none;
+  border-radius: 2px;
+  padding: 4px 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.empty-state-recents button:hover {
+  background: var(--app-surface-hover);
 }
 
 .settings-panel {

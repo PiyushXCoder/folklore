@@ -8,6 +8,7 @@ import type { Heading } from "./components/PageViewer";
 import { PageViewer } from "./components/PageViewer";
 import { SettingsPanel } from "./components/SettingsPanel";
 import { useNativeMenu } from "./hooks/useNativeMenu";
+import { useRecentDocs, type RecentDoc } from "./hooks/useRecentDocs";
 import { useSettings } from "./hooks/useSettings";
 import { ISSUES_URL, REPO_URL, buildMenuActions, openExternal } from "./lib/menuActions";
 import {
@@ -27,6 +28,7 @@ type View = "doc" | "settings" | "metadata";
 
 function App() {
   const { settings, setSettings, ready } = useSettings();
+  const { recents, record } = useRecentDocs();
   const [doc, setDoc] = useState<OpenedDoc | null>(null);
   const [outline, setOutline] = useState<Heading[]>([]);
   const [frontmatter, setFrontmatter] = useState<Record<string, unknown>>({});
@@ -36,19 +38,27 @@ function App() {
   const [searchOpen, setSearchOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const load = useCallback(async (promise: Promise<OpenedDoc | null>) => {
-    try {
-      const opened = await promise;
-      if (opened) {
-        setDoc(opened);
-        setFrontmatter({});
-        setError(null);
-        setView("doc");
+  const load = useCallback(
+    async (promise: Promise<OpenedDoc | null>) => {
+      try {
+        const opened = await promise;
+        if (opened) {
+          setDoc(opened);
+          setFrontmatter({});
+          setError(null);
+          setView("doc");
+          // Only path-based opens (desktop) have a stable identity that can be reopened
+          // later — a plain File/handle (web) has no persistable path.
+          if (opened.watch?.kind === "path") {
+            record({ path: opened.watch.path, filename: opened.filename });
+          }
+        }
+      } catch (e) {
+        setError(e instanceof Error ? e.message : String(e));
       }
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-    }
-  }, []);
+    },
+    [record],
+  );
 
   // CLI-arg launch (`folklore some.superlore` / OS "Open with") — desktop only.
   useEffect(() => {
@@ -143,6 +153,8 @@ function App() {
     },
     [load],
   );
+
+  const openRecent = useCallback((entry: RecentDoc) => load(openFromPath(entry.path)), [load]);
 
   const goHome = useCallback(() => {
     setDoc(null);
@@ -275,6 +287,7 @@ function App() {
         view,
         sidebarCollapsed,
         outlineLength: outline.length,
+        recents,
         handlePickFile,
         setSearchOpen,
         setView,
@@ -282,10 +295,11 @@ function App() {
         openAbout,
         openRepo: () => openExternal(REPO_URL),
         openReportIssue: () => openExternal(ISSUES_URL),
+        openRecent,
         goHome,
         exitApp,
       }),
-    [doc, view, sidebarCollapsed, outline.length, handlePickFile, openAbout, goHome, exitApp],
+    [doc, view, sidebarCollapsed, outline.length, recents, handlePickFile, openAbout, openRecent, goHome, exitApp],
   );
 
   useNativeMenu(menuActions);
@@ -295,6 +309,7 @@ function App() {
   return (
     <div
       className="app-shell"
+      data-desktop={isDesktop()}
       onDragOver={(e) => e.preventDefault()}
       onDrop={isDesktop() ? undefined : handleWebDrop}
     >
@@ -333,7 +348,7 @@ function App() {
               onSearchClose={() => setSearchOpen(false)}
             />
           ) : (
-            <EmptyState onPickFile={handlePickFile} error={error} />
+            <EmptyState onPickFile={handlePickFile} error={error} recents={recents.slice(0, 3)} onOpenRecent={openRecent} />
           )}
         </main>
       </div>

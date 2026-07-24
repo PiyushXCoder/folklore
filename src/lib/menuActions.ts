@@ -1,3 +1,4 @@
+import type { RecentDoc } from "../hooks/useRecentDocs";
 import { isDesktop } from "./platform";
 
 export function openExternal(url: string) {
@@ -8,27 +9,16 @@ export function openExternal(url: string) {
   }
 }
 
-export type MenuActionId =
-  | "open"
-  | "home"
-  | "exit"
-  | "find"
-  | "metadata"
-  | "sidebar"
-  | "settings"
-  | "about"
-  | "repo"
-  | "report-issue";
-
 export interface MenuAction {
-  id: MenuActionId;
+  id: string;
   label: string;
   section: "file" | "view" | "help";
   accelerator?: string;
-  kind: "normal" | "checkbox";
+  kind: "normal" | "checkbox" | "submenu";
   enabled: boolean;
   checked?: boolean;
-  run: () => void;
+  run?: () => void;
+  children?: MenuAction[];
 }
 
 export const REPO_URL = "https://github.com/PiyushXCoder/folklore";
@@ -39,6 +29,7 @@ interface MenuActionsContext {
   view: "doc" | "settings" | "metadata";
   sidebarCollapsed: boolean;
   outlineLength: number;
+  recents: RecentDoc[];
   handlePickFile: () => void;
   setSearchOpen: (v: boolean | ((o: boolean) => boolean)) => void;
   setView: (v: "doc" | "settings" | "metadata") => void;
@@ -46,6 +37,7 @@ interface MenuActionsContext {
   openAbout: () => void;
   openRepo: () => void;
   openReportIssue: () => void;
+  openRecent: (doc: RecentDoc) => void;
   goHome: () => void;
   exitApp: () => void;
 }
@@ -60,6 +52,24 @@ export function buildMenuActions(ctx: MenuActionsContext): MenuAction[] {
       accelerator: "CmdOrCtrl+O",
       enabled: true,
       run: ctx.handlePickFile,
+    },
+    {
+      id: "recent",
+      label: "Recent",
+      section: "file",
+      kind: "submenu",
+      enabled: true,
+      children:
+        ctx.recents.length === 0
+          ? [{ id: "recent-empty", label: "(No recent documents)", section: "file", kind: "normal", enabled: false }]
+          : ctx.recents.map((r) => ({
+              id: `recent:${r.path}`,
+              label: r.filename,
+              section: "file",
+              kind: "normal",
+              enabled: true,
+              run: () => ctx.openRecent(r),
+            })),
     },
     {
       id: "home",
