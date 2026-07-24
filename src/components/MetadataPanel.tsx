@@ -3,6 +3,7 @@ import type { OpenedDoc } from "../lib/openFile";
 interface MetadataPanelProps {
   doc: OpenedDoc;
   frontmatter: Record<string, unknown>;
+  onBack: () => void;
 }
 
 function formatValue(value: unknown): string {
@@ -26,11 +27,14 @@ function KeyValueList({ entries }: { entries: [string, unknown][] }) {
   );
 }
 
-export function MetadataPanel({ doc, frontmatter }: MetadataPanelProps) {
+export function MetadataPanel({ doc, frontmatter, onBack }: MetadataPanelProps) {
   const isBundle = doc.filename.toLowerCase().endsWith(".superlore");
 
   return (
     <div className="metadata-panel">
+      <button className="panel-back-button" onClick={onBack}>
+        ← Back
+      </button>
       <h1>Metadata</h1>
 
       <section>

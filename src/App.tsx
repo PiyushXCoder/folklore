@@ -1,12 +1,15 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import logo from "./assets/accordion.svg";
 import { EmptyState } from "./components/EmptyState";
+import { MenuBar } from "./components/MenuBar";
 import { MetadataPanel } from "./components/MetadataPanel";
 import { OutlineSidebar } from "./components/OutlineSidebar";
 import type { Heading } from "./components/PageViewer";
 import { PageViewer } from "./components/PageViewer";
 import { SettingsPanel } from "./components/SettingsPanel";
+import { useNativeMenu } from "./hooks/useNativeMenu";
 import { useSettings } from "./hooks/useSettings";
+import { ISSUES_URL, REPO_URL, buildMenuActions, openExternal } from "./lib/menuActions";
 import {
   getLaunchPath,
   openFromFile,
@@ -85,20 +88,17 @@ function App() {
     });
   }, [doc?.watch, doc?.filename]);
 
-  // Ctrl/Cmd+F opens find-in-doc; suppress the browser/webview's native find bar.
-  useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "f") {
-        e.preventDefault();
-        if (view === "doc" && doc) setSearchOpen(true);
-      }
-    }
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [view, doc]);
-
   // Close search on doc switch (not on live-reload, which keeps the same filename).
   useEffect(() => setSearchOpen(false), [doc?.filename]);
+
+  // Keep the native window title in sync with the open doc, since the title-bar row
+  // (which used to show the filename) is desktop-only-hidden in favor of the OS menu.
+  useEffect(() => {
+    if (!isDesktop()) return;
+    import("@tauri-apps/api/window").then(({ getCurrentWindow }) => {
+      getCurrentWindow().setTitle(doc?.filename ?? "folklore");
+    });
+  }, [doc?.filename]);
 
   const handleWebDrop = useCallback(
     (e: React.DragEvent) => {
@@ -144,6 +144,125 @@ function App() {
     [load],
   );
 
+  const goHome = useCallback(() => {
+    setDoc(null);
+    setView("doc");
+    setFrontmatter({});
+    setError(null);
+    setOutline([]);
+    setSearchOpen(false);
+    setSidebarCollapsed(false);
+  }, []);
+
+  const exitApp = useCallback(() => {
+    if (isDesktop()) {
+      import("@tauri-apps/api/window").then(({ getCurrentWindow }) => getCurrentWindow().close());
+    } else {
+      window.close();
+    }
+  }, []);
+
+  const headingIndexRef = useRef(0);
+  const navigateHeading = useCallback(
+    (direction: 1 | -1) => {
+      if (outline.length === 0) return;
+      headingIndexRef.current = Math.min(Math.max(headingIndexRef.current + direction, 0), outline.length - 1);
+      document.getElementById(outline[headingIndexRef.current].id)?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    },
+    [outline],
+  );
+
+  // Global shortcuts: Ctrl/Cmd+F (find), Ctrl/Cmd+O (open), Ctrl/Cmd+B (toggle sidebar),
+  // vim-style h/l (prev/next heading) and j/k (scroll) while reading a doc.
+  useEffect(() => {
+    function isEditableTarget(target: EventTarget | null) {
+      return target instanceof HTMLElement && (target.tagName === "INPUT" || target.isContentEditable);
+    }
+
+    function onKeyDown(e: KeyboardEvent) {
+      const mod = e.metaKey || e.ctrlKey;
+      if (mod && e.key.toLowerCase() === "f") {
+        e.preventDefault();
+        if (view === "doc" && doc) setSearchOpen(true);
+        return;
+      }
+      if (mod && e.key.toLowerCase() === "o") {
+        e.preventDefault();
+        handlePickFile();
+        return;
+      }
+      if (mod && e.key.toLowerCase() === "b") {
+        e.preventDefault();
+        setSidebarCollapsed((c) => !c);
+        return;
+      }
+      if (mod || isEditableTarget(e.target) || view !== "doc" || !doc) return;
+      switch (e.key) {
+        case "j":
+          document.querySelector(".app-main")?.scrollBy({ top: 120, behavior: "smooth" });
+          break;
+        case "k":
+          document.querySelector(".app-main")?.scrollBy({ top: -120, behavior: "smooth" });
+          break;
+        case "h":
+          navigateHeading(-1);
+          break;
+        case "l":
+          navigateHeading(1);
+          break;
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [view, doc, handlePickFile, navigateHeading]);
+
+  const openAbout = useCallback(() => {
+    if (isDesktop()) {
+      import("@tauri-apps/api/webviewWindow").then(({ WebviewWindow }) => {
+        WebviewWindow.getByLabel("about").then((existing) => {
+          if (existing) {
+            existing.setFocus();
+            return;
+          }
+          new WebviewWindow("about", {
+            url: "index.html?about=1",
+            title: "About folklore",
+            width: 360,
+            height: 420,
+            resizable: false,
+          });
+        });
+      });
+    } else {
+      window.open("?about=1", "_blank", "width=360,height=420");
+    }
+  }, []);
+
+  const menuActions = useMemo(
+    () =>
+      buildMenuActions({
+        doc,
+        view,
+        sidebarCollapsed,
+        outlineLength: outline.length,
+        handlePickFile,
+        setSearchOpen,
+        setView,
+        setSidebarCollapsed,
+        openAbout,
+        openRepo: () => openExternal(REPO_URL),
+        openReportIssue: () => openExternal(ISSUES_URL),
+        goHome,
+        exitApp,
+      }),
+    [doc, view, sidebarCollapsed, outline.length, handlePickFile, openAbout, goHome, exitApp],
+  );
+
+  useNativeMenu(menuActions);
+
   if (!ready) return null;
 
   return (
@@ -160,43 +279,23 @@ function App() {
         onChange={handleFileInput}
       />
 
-      <header className="title-bar">
-        <div className="title-bar-left">
-          {view === "doc" && outline.length > 0 && (
-            <button
-              className="sidebar-toggle"
-              title={sidebarCollapsed ? "Show outline" : "Hide outline"}
-              onClick={() => setSidebarCollapsed((c) => !c)}
-            >
-              ☰
-            </button>
-          )}
-          <img src={logo} alt="" className="title-bar-logo" />
-          <span className="title-bar-filename">{doc?.filename ?? "folklore"}</span>
-        </div>
-        <div className="title-bar-actions">
-          <button onClick={handlePickFile}>Open</button>
-          {doc && view === "doc" && (
-            <button onClick={() => setSearchOpen((o) => !o)}>{searchOpen ? "Close find" : "Find"}</button>
-          )}
-          {doc && (
-            <button onClick={() => setView(view === "metadata" ? "doc" : "metadata")}>
-              {view === "metadata" ? "Close metadata" : "Metadata"}
-            </button>
-          )}
-          <button onClick={() => setView(view === "settings" ? "doc" : "settings")}>
-            {view === "settings" ? "Close settings" : "Settings"}
-          </button>
-        </div>
-      </header>
+      {!isDesktop() && (
+        <header className="title-bar">
+          <MenuBar actions={menuActions} />
+          <div className="title-bar-left">
+            <img src={logo} alt="" className="title-bar-logo" />
+            <span className="title-bar-filename">{doc?.filename ?? "folklore"}</span>
+          </div>
+        </header>
+      )}
 
       <div className="app-body">
         {view === "doc" && !sidebarCollapsed && <OutlineSidebar headings={outline} />}
         <main className="app-main">
           {view === "settings" ? (
-            <SettingsPanel settings={settings} onChange={setSettings} />
+            <SettingsPanel settings={settings} onChange={setSettings} onBack={() => setView("doc")} />
           ) : view === "metadata" && doc ? (
-            <MetadataPanel doc={doc} frontmatter={frontmatter} />
+            <MetadataPanel doc={doc} frontmatter={frontmatter} onBack={() => setView("doc")} />
           ) : doc ? (
             <PageViewer
               doc={doc}

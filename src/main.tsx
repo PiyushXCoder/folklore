@@ -8,9 +8,10 @@ import "superlore/runtime.css";
 import "./theme/schemes.css";
 import "./app.css";
 import App from "./App";
+import { AboutPage } from "./components/AboutPage";
+
+const isAboutWindow = new URLSearchParams(location.search).has("about");
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <React.StrictMode>{isAboutWindow ? <AboutPage /> : <App />}</React.StrictMode>,
 );

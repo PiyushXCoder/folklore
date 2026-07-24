@@ -4,11 +4,15 @@ import { ACCENTS, SCHEMES, SCHEME_LABELS } from "../theme/tokens";
 interface SettingsPanelProps {
   settings: Settings;
   onChange: (settings: Settings) => void;
+  onBack: () => void;
 }
 
-export function SettingsPanel({ settings, onChange }: SettingsPanelProps) {
+export function SettingsPanel({ settings, onChange, onBack }: SettingsPanelProps) {
   return (
     <div className="settings-panel">
+      <button className="panel-back-button" onClick={onBack}>
+        ← Back
+      </button>
       <h1>Settings</h1>
 
       <section>
