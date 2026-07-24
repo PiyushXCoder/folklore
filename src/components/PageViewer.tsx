@@ -3,7 +3,7 @@ import { SuperloreDoc } from "superlore/runtime";
 import { SearchBar } from "./SearchBar";
 import type { OpenedDoc } from "../lib/openFile";
 import { rehypeResolveAssets } from "../lib/superloreFile";
-import { schemeMode, type Scheme } from "../theme/tokens";
+import { schemeCodeTheme, schemeMode, type Scheme } from "../theme/tokens";
 import { SUPERLORE_TOKENS } from "../theme/tokens";
 
 export interface Heading {
@@ -78,6 +78,7 @@ export function PageViewer({ doc, scheme, onOutline, onFrontmatter, searchOpen, 
           source={doc.bundle.mdx}
           theme={schemeMode(scheme)}
           tokens={SUPERLORE_TOKENS}
+          codeTheme={{ light: schemeCodeTheme(scheme), dark: schemeCodeTheme(scheme) }}
           rehypePlugins={rehypePlugins}
           badge={false}
           onError={setError}

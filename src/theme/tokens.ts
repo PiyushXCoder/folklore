@@ -55,6 +55,23 @@ export function schemeMode(scheme: Scheme): "light" | "dark" {
   return SCHEME_MODE[scheme];
 }
 
+// Maps each app color scheme to a matching bundled Shiki theme, so code blocks read as part of the
+// same scheme instead of always rendering in superlore's hardcoded "tokyo-night". No Shiki theme
+// named "adwaita"/"darcula" exists — github-light/dracula are the closest stand-ins.
+const SCHEME_CODE_THEME: Record<Scheme, string> = {
+  latte: "catppuccin-latte",
+  frappe: "catppuccin-frappe",
+  macchiato: "catppuccin-macchiato",
+  mocha: "catppuccin-mocha",
+  darcula: "dracula",
+  vscode: "dark-plus",
+  adwaita: "github-light",
+};
+
+export function schemeCodeTheme(scheme: Scheme): string {
+  return SCHEME_CODE_THEME[scheme];
+}
+
 /**
  * Static — every value is a `var(--app-*)` reference, so it never needs recomputing when the
  * scheme/accent changes. The CSS custom properties themselves (set in schemes.css, keyed off
