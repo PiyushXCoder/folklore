@@ -151,7 +151,7 @@ function App() {
     setError(null);
     setOutline([]);
     setSearchOpen(false);
-    setSidebarCollapsed(false);
+    setSidebarCollapsed(true);
   }, []);
 
   const exitApp = useCallback(() => {
@@ -176,11 +176,13 @@ function App() {
   );
 
   // Global shortcuts: Ctrl/Cmd+F (find), Ctrl/Cmd+O (open), Ctrl/Cmd+B (toggle sidebar),
-  // vim-style h/l (prev/next heading) and j/k (scroll) while reading a doc.
+  // vim-style h/l (prev/next heading), j/k (scroll), gg/G (top/bottom) while reading a doc.
   useEffect(() => {
     function isEditableTarget(target: EventTarget | null) {
       return target instanceof HTMLElement && (target.tagName === "INPUT" || target.isContentEditable);
     }
+
+    let lastGPress = 0;
 
     function onKeyDown(e: KeyboardEvent) {
       const mod = e.metaKey || e.ctrlKey;
@@ -196,7 +198,7 @@ function App() {
       }
       if (mod && e.key.toLowerCase() === "b") {
         e.preventDefault();
-        setSidebarCollapsed((c) => !c);
+        if (doc) setSidebarCollapsed((c) => !c);
         return;
       }
       if (mod || isEditableTarget(e.target) || view !== "doc" || !doc) return;
@@ -213,11 +215,36 @@ function App() {
         case "l":
           navigateHeading(1);
           break;
+        case "d": {
+          const el = document.querySelector(".app-main");
+          el?.scrollBy({ top: el.clientHeight / 2, behavior: "smooth" });
+          break;
+        }
+        case "u": {
+          const el = document.querySelector(".app-main");
+          el?.scrollBy({ top: -el.clientHeight / 2, behavior: "smooth" });
+          break;
+        }
+        case "G":
+          document.querySelector(".app-main")?.scrollTo({ top: Number.MAX_SAFE_INTEGER, behavior: "smooth" });
+          headingIndexRef.current = Math.max(outline.length - 1, 0);
+          break;
+        case "g": {
+          const now = e.timeStamp;
+          if (now - lastGPress < 500) {
+            document.querySelector(".app-main")?.scrollTo({ top: 0, behavior: "smooth" });
+            headingIndexRef.current = 0;
+            lastGPress = 0;
+          } else {
+            lastGPress = now;
+          }
+          break;
+        }
       }
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [view, doc, handlePickFile, navigateHeading]);
+  }, [view, doc, outline.length, handlePickFile, navigateHeading]);
 
   const openAbout = useCallback(() => {
     if (isDesktop()) {

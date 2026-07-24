@@ -83,7 +83,7 @@ export function buildMenuActions(ctx: MenuActionsContext): MenuAction[] {
       section: "view",
       kind: "checkbox",
       accelerator: "CmdOrCtrl+B",
-      enabled: ctx.view === "doc" && ctx.outlineLength > 0,
+      enabled: Boolean(ctx.doc) && ctx.view === "doc" && ctx.outlineLength > 0,
       checked: !ctx.sidebarCollapsed,
       run: () => ctx.setSidebarCollapsed((c) => !c),
     },
