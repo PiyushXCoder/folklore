@@ -38,6 +38,16 @@ function App() {
   const [searchOpen, setSearchOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const zoomIn = useCallback(
+    () => setSettings((s) => ({ ...s, zoom: Math.min(s.zoom + 10, 200) })),
+    [setSettings],
+  );
+  const zoomOut = useCallback(
+    () => setSettings((s) => ({ ...s, zoom: Math.max(s.zoom - 10, 50) })),
+    [setSettings],
+  );
+  const zoomReset = useCallback(() => setSettings((s) => ({ ...s, zoom: 100 })), [setSettings]);
+
   const load = useCallback(
     async (promise: Promise<OpenedDoc | null>) => {
       try {
@@ -213,6 +223,21 @@ function App() {
         if (doc) setSidebarCollapsed((c) => !c);
         return;
       }
+      if (mod && (e.key === "=" || e.key === "+")) {
+        e.preventDefault();
+        zoomIn();
+        return;
+      }
+      if (mod && e.key === "-") {
+        e.preventDefault();
+        zoomOut();
+        return;
+      }
+      if (mod && e.key === "0") {
+        e.preventDefault();
+        zoomReset();
+        return;
+      }
       if (mod || isEditableTarget(e.target) || view !== "doc" || !doc) return;
       switch (e.key) {
         case "j":
@@ -256,7 +281,7 @@ function App() {
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [view, doc, outline.length, handlePickFile, navigateHeading]);
+  }, [view, doc, outline.length, handlePickFile, navigateHeading, zoomIn, zoomOut, zoomReset]);
 
   const openAbout = useCallback(() => {
     if (isDesktop()) {
@@ -298,8 +323,25 @@ function App() {
         openRecent,
         goHome,
         exitApp,
+        zoomIn,
+        zoomOut,
+        zoomReset,
       }),
-    [doc, view, sidebarCollapsed, outline.length, recents, handlePickFile, openAbout, openRecent, goHome, exitApp],
+    [
+      doc,
+      view,
+      sidebarCollapsed,
+      outline.length,
+      recents,
+      handlePickFile,
+      openAbout,
+      openRecent,
+      goHome,
+      exitApp,
+      zoomIn,
+      zoomOut,
+      zoomReset,
+    ],
   );
 
   useNativeMenu(menuActions);
@@ -310,6 +352,7 @@ function App() {
     <div
       className="app-shell"
       data-desktop={isDesktop()}
+      style={{ zoom: `${settings.zoom}%` }}
       onDragOver={(e) => e.preventDefault()}
       onDrop={isDesktop() ? undefined : handleWebDrop}
     >

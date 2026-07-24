@@ -40,6 +40,9 @@ interface MenuActionsContext {
   openRecent: (doc: RecentDoc) => void;
   goHome: () => void;
   exitApp: () => void;
+  zoomIn: () => void;
+  zoomOut: () => void;
+  zoomReset: () => void;
 }
 
 export function buildMenuActions(ctx: MenuActionsContext): MenuAction[] {
@@ -121,6 +124,33 @@ export function buildMenuActions(ctx: MenuActionsContext): MenuAction[] {
       kind: "normal",
       enabled: true,
       run: () => ctx.setView("settings"),
+    },
+    {
+      id: "zoom-in",
+      label: "Zoom In",
+      section: "view",
+      kind: "normal",
+      accelerator: "CmdOrCtrl+=",
+      enabled: true,
+      run: ctx.zoomIn,
+    },
+    {
+      id: "zoom-out",
+      label: "Zoom Out",
+      section: "view",
+      kind: "normal",
+      accelerator: "CmdOrCtrl+-",
+      enabled: true,
+      run: ctx.zoomOut,
+    },
+    {
+      id: "zoom-reset",
+      label: "Reset Zoom",
+      section: "view",
+      kind: "normal",
+      accelerator: "CmdOrCtrl+0",
+      enabled: true,
+      run: ctx.zoomReset,
     },
     {
       id: "about",
