@@ -30,6 +30,7 @@ function App() {
   const [view, setView] = useState<View>("doc");
   const [error, setError] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(async (promise: Promise<OpenedDoc | null>) => {
@@ -83,6 +84,21 @@ function App() {
         .catch((e) => setError(e instanceof Error ? e.message : String(e)));
     });
   }, [doc?.watch, doc?.filename]);
+
+  // Ctrl/Cmd+F opens find-in-doc; suppress the browser/webview's native find bar.
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "f") {
+        e.preventDefault();
+        if (view === "doc" && doc) setSearchOpen(true);
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [view, doc]);
+
+  // Close search on doc switch (not on live-reload, which keeps the same filename).
+  useEffect(() => setSearchOpen(false), [doc?.filename]);
 
   const handleWebDrop = useCallback(
     (e: React.DragEvent) => {
@@ -160,6 +176,9 @@ function App() {
         </div>
         <div className="title-bar-actions">
           <button onClick={handlePickFile}>Open</button>
+          {doc && view === "doc" && (
+            <button onClick={() => setSearchOpen((o) => !o)}>{searchOpen ? "Close find" : "Find"}</button>
+          )}
           {doc && (
             <button onClick={() => setView(view === "metadata" ? "doc" : "metadata")}>
               {view === "metadata" ? "Close metadata" : "Metadata"}
@@ -179,7 +198,14 @@ function App() {
           ) : view === "metadata" && doc ? (
             <MetadataPanel doc={doc} frontmatter={frontmatter} />
           ) : doc ? (
-            <PageViewer doc={doc} scheme={settings.scheme} onOutline={setOutline} onFrontmatter={setFrontmatter} />
+            <PageViewer
+              doc={doc}
+              scheme={settings.scheme}
+              onOutline={setOutline}
+              onFrontmatter={setFrontmatter}
+              searchOpen={searchOpen}
+              onSearchClose={() => setSearchOpen(false)}
+            />
           ) : (
             <EmptyState onPickFile={handlePickFile} error={error} />
           )}

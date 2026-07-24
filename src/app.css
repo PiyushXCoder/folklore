@@ -170,6 +170,57 @@ body {
   margin: 32px 24px;
 }
 
+.search-bar {
+  position: fixed;
+  top: 52px;
+  right: 24px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  background: var(--app-bg-mantle);
+  border: 1px solid var(--app-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.search-bar input {
+  background: var(--app-surface);
+  color: var(--app-text);
+  border: 1px solid var(--app-border-subtle);
+  padding: 4px 8px;
+}
+
+.search-bar-count {
+  color: var(--app-text-muted);
+  font-size: 0.85em;
+  min-width: 4.5em;
+}
+
+.search-bar button {
+  background: var(--app-surface);
+  color: var(--app-text);
+  border: 1px solid var(--app-border);
+}
+
+.search-bar button:hover {
+  background: var(--app-surface-hover);
+}
+
+.search-bar button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+::highlight(doc-search) {
+  background-color: color-mix(in srgb, var(--app-accent) 35%, transparent);
+}
+
+::highlight(doc-search-active) {
+  background-color: var(--app-accent);
+  color: var(--app-accent-ink);
+}
+
 .page {
   padding: 64px 72px;
   height: fit-content;

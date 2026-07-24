@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SuperloreDoc } from "superlore/runtime";
+import { SearchBar } from "./SearchBar";
 import type { OpenedDoc } from "../lib/openFile";
 import { rehypeResolveAssets } from "../lib/superloreFile";
 import { schemeMode, type Scheme } from "../theme/tokens";
@@ -16,9 +17,11 @@ interface PageViewerProps {
   scheme: Scheme;
   onOutline: (headings: Heading[]) => void;
   onFrontmatter: (frontmatter: Record<string, unknown>) => void;
+  searchOpen: boolean;
+  onSearchClose: () => void;
 }
 
-export function PageViewer({ doc, scheme, onOutline, onFrontmatter }: PageViewerProps) {
+export function PageViewer({ doc, scheme, onOutline, onFrontmatter, searchOpen, onSearchClose }: PageViewerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [hero, setHero] = useState<{ title?: string; summary?: string }>({});
@@ -68,6 +71,7 @@ export function PageViewer({ doc, scheme, onOutline, onFrontmatter }: PageViewer
           {hero.summary && <p className="page-hero-summary">{hero.summary}</p>}
         </header>
       )}
+      <SearchBar open={searchOpen} onClose={onSearchClose} containerRef={containerRef} contentKey={doc.bundle.mdx} />
       <div className="page" ref={containerRef}>
         <SuperloreDoc
           key={doc.filename}
