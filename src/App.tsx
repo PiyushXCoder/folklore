@@ -111,13 +111,18 @@ function App() {
   // Close search on doc switch (not on live-reload, which keeps the same filename).
   useEffect(() => setSearchOpen(false), [doc?.filename]);
 
-  // Keep the native window title in sync with the open doc, since the title-bar row
-  // (which used to show the filename) is desktop-only-hidden in favor of the OS menu.
+  // Keep the window title in sync with the open doc, since the title-bar row (which used to show
+  // the filename) is desktop-only-hidden in favor of the OS menu. `document.title` covers the web
+  // build's browser tab; the native call is what the desktop WM/taskbar actually reads.
+  // `setTitle` needs `core:window:allow-set-title` in the capability file — it is not part of
+  // `core:window:default`, and without it the promise just rejects, hence the explicit catch.
   useEffect(() => {
+    const title = doc ? `${doc.filename} — folklore` : "folklore";
+    document.title = title;
     if (!isDesktop()) return;
-    import("@tauri-apps/api/window").then(({ getCurrentWindow }) => {
-      getCurrentWindow().setTitle(doc?.filename ?? "folklore");
-    });
+    import("@tauri-apps/api/window")
+      .then(({ getCurrentWindow }) => getCurrentWindow().setTitle(title))
+      .catch((e) => console.error("failed to set window title", e));
   }, [doc?.filename]);
 
   const handleWebDrop = useCallback(
