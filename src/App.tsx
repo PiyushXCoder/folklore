@@ -9,6 +9,7 @@ import { PageViewer } from "./components/PageViewer";
 import { SettingsPanel } from "./components/SettingsPanel";
 import { useNativeMenu } from "./hooks/useNativeMenu";
 import { useRecentDocs, type RecentDoc } from "./hooks/useRecentDocs";
+import { useScrollLatchRecovery } from "./hooks/useScrollLatchRecovery";
 import { useSettings } from "./hooks/useSettings";
 import { ISSUES_URL, REPO_URL, buildMenuActions, openExternal } from "./lib/menuActions";
 import {
@@ -37,6 +38,8 @@ function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useScrollLatchRecovery();
 
   const zoomIn = useCallback(
     () => setSettings((s) => ({ ...s, zoom: Math.min(s.zoom + 10, 200) })),
