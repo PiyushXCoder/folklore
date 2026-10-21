@@ -32,6 +32,7 @@ interface MenuActionsContext {
   recents: RecentDoc[];
   handlePickFile: () => void;
   setSearchOpen: (v: boolean | ((o: boolean) => boolean)) => void;
+  copySelectionContext: () => void;
   setView: (v: "doc" | "settings" | "metadata") => void;
   setSidebarCollapsed: (v: (c: boolean) => boolean) => void;
   openAbout: () => void;
@@ -108,6 +109,18 @@ export function buildMenuActions(ctx: MenuActionsContext): MenuAction[] {
       accelerator: "CmdOrCtrl+F",
       enabled: Boolean(ctx.doc) && ctx.view === "doc",
       run: () => ctx.setSearchOpen(true),
+    },
+    {
+      // Deliberately not gated on whether a selection exists: `useNativeMenu` rebuilds the whole
+      // native menu whenever the action list changes, and a `hasSelection` flag would do that on
+      // every selectionchange. With nothing selected the action just says so.
+      id: "copy-context",
+      label: "Copy Context",
+      section: "view",
+      kind: "normal",
+      accelerator: "CmdOrCtrl+Shift+C",
+      enabled: Boolean(ctx.doc) && ctx.view === "doc",
+      run: ctx.copySelectionContext,
     },
     {
       id: "metadata",

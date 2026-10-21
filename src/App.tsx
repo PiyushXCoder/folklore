@@ -11,6 +11,7 @@ import { useNativeMenu } from "./hooks/useNativeMenu";
 import { useRecentDocs, type RecentDoc } from "./hooks/useRecentDocs";
 import { useScrollLatchRecovery } from "./hooks/useScrollLatchRecovery";
 import { useSettings } from "./hooks/useSettings";
+import { copyText, docSourceLabel, formatDocContext } from "./lib/docContext";
 import { ISSUES_URL, REPO_URL, buildMenuActions, openExternal } from "./lib/menuActions";
 import {
   getLaunchPath,
@@ -23,6 +24,7 @@ import {
   type OpenedDoc,
 } from "./lib/openFile";
 import { isDesktop } from "./lib/platform";
+import { resolveSelectionRange } from "./lib/sourceMap";
 import { watchSource } from "./lib/watchSource";
 
 type View = "doc" | "settings" | "metadata";
@@ -38,6 +40,8 @@ function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [toast, setToast] = useState<string | null>(null);
+  const toastTimer = useRef<number | undefined>(undefined);
 
   useScrollLatchRecovery();
 
@@ -205,6 +209,33 @@ function App() {
     [outline],
   );
 
+  const showToast = useCallback((message: string) => {
+    setToast(message);
+    window.clearTimeout(toastTimer.current);
+    toastTimer.current = window.setTimeout(() => setToast(null), 1600);
+  }, []);
+
+  useEffect(() => () => window.clearTimeout(toastTimer.current), []);
+
+  /** Copies the selection as `<file>:<line>:<col>-<line>:<col>` plus the text, to paste into Claude. */
+  const copySelectionContext = useCallback(async () => {
+    if (!doc || view !== "doc") return;
+    const selection = window.getSelection();
+    const page = document.querySelector(".page");
+    // Only selections in the document itself — not the sidebar, panels or chrome.
+    if (!selection || selection.isCollapsed || !selection.anchorNode || !page?.contains(selection.anchorNode)) {
+      showToast("Select some text in the page first");
+      return;
+    }
+    const range = resolveSelectionRange(selection, doc.bundle.mdx);
+    if (!range) {
+      showToast("Couldn't locate that selection in the source");
+      return;
+    }
+    const copied = await copyText(formatDocContext(docSourceLabel(doc), range));
+    showToast(copied ? (range.exact ? "Context copied" : "Context copied (approximate lines)") : "Copy failed");
+  }, [doc, view, showToast]);
+
   // Global shortcuts: Ctrl/Cmd+F (find), Ctrl/Cmd+O (open), Ctrl/Cmd+B (toggle sidebar),
   // vim-style h/l (prev/next heading), j/k (scroll), gg/G (top/bottom) while reading a doc.
   useEffect(() => {
@@ -216,6 +247,11 @@ function App() {
 
     function onKeyDown(e: KeyboardEvent) {
       const mod = e.metaKey || e.ctrlKey;
+      if (mod && e.shiftKey && e.key.toLowerCase() === "c") {
+        e.preventDefault();
+        copySelectionContext();
+        return;
+      }
       if (mod && e.key.toLowerCase() === "f") {
         e.preventDefault();
         if (view === "doc" && doc) setSearchOpen(true);
@@ -289,7 +325,7 @@ function App() {
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [view, doc, outline.length, handlePickFile, navigateHeading, zoomIn, zoomOut, zoomReset]);
+  }, [view, doc, outline.length, handlePickFile, navigateHeading, copySelectionContext, zoomIn, zoomOut, zoomReset]);
 
   const openAbout = useCallback(() => {
     if (isDesktop()) {
@@ -322,6 +358,7 @@ function App() {
         outlineLength: outline.length,
         recents,
         handlePickFile,
+        copySelectionContext,
         setSearchOpen,
         setView,
         setSidebarCollapsed,
@@ -342,6 +379,7 @@ function App() {
       outline.length,
       recents,
       handlePickFile,
+      copySelectionContext,
       openAbout,
       openRecent,
       goHome,
@@ -403,6 +441,12 @@ function App() {
           )}
         </main>
       </div>
+
+      {toast && (
+        <div className="copy-toast" role="status">
+          {toast}
+        </div>
+      )}
     </div>
   );
 }

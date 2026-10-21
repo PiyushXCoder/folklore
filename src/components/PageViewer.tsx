@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SuperloreDoc } from "superlore/runtime";
 import { SearchBar } from "./SearchBar";
 import type { OpenedDoc } from "../lib/openFile";
+import { rehypeSourcePositions } from "../lib/sourceMap";
 import { rehypeResolveAssets } from "../lib/superloreFile";
 import { schemeCodeTheme, schemeMode, type Scheme } from "../theme/tokens";
 import { SUPERLORE_TOKENS } from "../theme/tokens";
@@ -27,7 +28,9 @@ export function PageViewer({ doc, scheme, onOutline, onFrontmatter, searchOpen, 
   const [hero, setHero] = useState<{ title?: string; summary?: string }>({});
 
   const rehypePlugins = useMemo(
-    () => [rehypeResolveAssets(doc.bundle.assets)],
+    // rehypeSourcePositions stamps source line/column onto the rendered elements, which is what
+    // "Copy Context" maps a selection back through.
+    () => [rehypeResolveAssets(doc.bundle.assets), rehypeSourcePositions()],
     [doc.bundle.assets],
   );
 

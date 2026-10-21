@@ -556,3 +556,17 @@ body {
   outline: 2px solid var(--app-text);
   outline-offset: 2px;
 }
+
+/* Transient status for Copy Context — the shortcut has no other feedback. Mirrors .search-bar. */
+.copy-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 10;
+  padding: 6px 10px;
+  font-size: 13px;
+  color: var(--app-text);
+  background: var(--app-bg-mantle);
+  border: 1px solid var(--app-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
